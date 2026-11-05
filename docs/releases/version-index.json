@@ -1,0 +1,62 @@
+[
+  {
+    "version": "0.5.2",
+    "local_date": "2026-11-05",
+    "title": "手动确认重画、可关闭提示、移除记录页面",
+    "notes": "v0.5.2.md"
+  },
+  {
+    "version": "0.5.1",
+    "local_date": "2026-11-05",
+    "title": "无效视野落点投影与重画闭合修复",
+    "notes": "v0.5.1.md"
+  },
+  {
+    "version": "0.5.0",
+    "local_date": "2026-11-05",
+    "title": "渐变有效视野与统一边界编辑",
+    "notes": "v0.5.0.md"
+  },
+  {
+    "version": "0.4.1",
+    "local_date": "2026-11-03",
+    "title": "区域运算真实操作流程修复",
+    "notes": "v0.4.1.md"
+  },
+  {
+    "version": "0.4.0",
+    "local_date": "2026-11-03",
+    "title": "后台索引、折线切分、闭合撤销与视野吸附",
+    "notes": "v0.4.0.md"
+  },
+  {
+    "version": "0.3.0-winfix1",
+    "local_date": "2026-11-03",
+    "title": "Windows 解压路径修复包",
+    "notes": "v0.3.0-winfix1.md"
+  },
+  {
+    "version": "0.3.0",
+    "local_date": "2026-11-02",
+    "title": "自适应工作区、可见帧操作与双平台运行包",
+    "notes": "v0.3.0.md"
+  },
+  {
+    "version": "0.2.1",
+    "local_date": "2026-11-02",
+    "title": "Mac 独立应用与启动入口修复",
+    "notes": "v0.2.1.md"
+  },
+  {
+    "version": "0.2.0",
+    "local_date": "2026-11-02",
+    "title": "简约界面、自动闭合与文件状态",
+    "notes": "v0.2.0.md"
+  },
+  {
+    "version": "0.1.0",
+    "local_date": "2026-11-02",
+    "title": "初始人工标注工作台",
+    "notes": "v0.1.0.md"
+  }
+]

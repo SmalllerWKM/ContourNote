@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clinical-contour-note"
+version = "0.5.2"
+description = "Offline manual clinical image annotation with Labelme JSON, COCO and masks"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+dependencies = ["PySide6>=6.7,<7", "Pillow>=10", "numpy>=1.26", "shapely>=2"]
+
+[project.optional-dependencies]
+test = ["pytest>=8", "pycocotools>=2.0.7"]
+build = ["pyinstaller>=6.16"]
+
+[project.scripts]
+contour-note = "clinical_annotator.app:main"
+
+[tool.setuptools.packages.find]
+include = ["clinical_annotator*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

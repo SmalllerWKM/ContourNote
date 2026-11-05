@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+.DS_Store
+build/
+dist/
+*.json.bak
+.contour-drafts/
+.contour-images/
+.contour-note/
+ContourNote_export_*/
+*.log
+/*.zip
+/*.app/

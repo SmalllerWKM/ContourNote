@@ -1,0 +1,17 @@
+{
+  "version": "5.5.0",
+  "flags": {},
+  "shapes": [],
+  "imagePath": "demo_004.png",
+  "imageData": null,
+  "imageHeight": 680,
+  "imageWidth": 960,
+  "clinical": {
+    "presence": "unlabeled",
+    "confidence": "medium",
+    "review": "initial",
+    "quality": [],
+    "risks": [],
+    "note": ""
+  }
+}

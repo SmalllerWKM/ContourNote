@@ -1,0 +1,54 @@
+{
+  "version": "5.5.0",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "组织 A",
+      "points": [
+        [
+          375.0,
+          370.0
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "point",
+      "flags": {
+        "weak": true
+      },
+      "description": ""
+    },
+    {
+      "label": "组织 B",
+      "points": [
+        [
+          650.0,
+          235.0
+        ],
+        [
+          800.0,
+          410.0
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {
+        "weak": true
+      },
+      "description": ""
+    }
+  ],
+  "imagePath": "demo_002.png",
+  "imageData": null,
+  "imageHeight": 680,
+  "imageWidth": 960,
+  "clinical": {
+    "presence": "present",
+    "confidence": "medium",
+    "review": "initial",
+    "quality": [
+      "清晰"
+    ],
+    "risks": [],
+    "note": "合成演示图，非真实病例；仅用于体验标注交互。"
+  }
+}
