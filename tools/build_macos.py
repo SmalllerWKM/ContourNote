@@ -8,6 +8,11 @@ import shutil
 import importlib.metadata
 from pathlib import Path
 
+try:
+    from tools.package_licenses import copy_licenses, prune_macos
+except ModuleNotFoundError:
+    from package_licenses import copy_licenses, prune_macos
+
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -47,8 +52,10 @@ def main():
     metadata.update(CFBundleName="临绘", CFBundleDisplayName="临绘 ContourNote",
                     CFBundleShortVersionString="0.5.2", CFBundleVersion="0.5.2")
     metadata_path.write_bytes(plistlib.dumps(metadata))
+    prune_macos(app)
+    copy_licenses(app / "Contents" / "Resources")
     licenses = app / "Contents" / "Resources" / "licenses"
-    for name in ["PySide6", "PySide6_Essentials", "shiboken6", "numpy", "Pillow", "shapely"]:
+    for name in ["PySide6", "PySide6_Essentials", "shiboken6", "numpy", "Pillow", "shapely", "pyinstaller"]:
         dist = importlib.metadata.distribution(name)
         for entry in dist.files or []:
             relative = Path(entry)

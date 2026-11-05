@@ -12,12 +12,17 @@ import subprocess
 import sys
 import zipfile
 
+try:
+    from tools.package_licenses import copy_licenses, prune_windows
+except ModuleNotFoundError:
+    from package_licenses import copy_licenses, prune_windows
+
 ROOT = Path(__file__).resolve().parents[1]
 BUILD = ROOT / "build" / "windows"
 DEST = ROOT / "dist" / "ContourNote-Windows-x64"
 PYTHON_SHA256 = "9e35319bffedab8b36ad44d8f377cb4f1733bcec257a0b6d04d94f01486ddb38"
 ARCHIVE_ROOT = "CN"
-PACKAGE_REVISION = "release"
+PACKAGE_REVISION = "licensefix1"
 MAX_ARCHIVE_PATH = 120
 
 
@@ -77,6 +82,8 @@ def main():
         if dll.name.lower().startswith(("msvcp", "vcruntime", "concrt")):
             shutil.copy2(dll, runtime / dll.name)
     (runtime / "python313._pth").write_text("python313.zip\n.\nLib/site-packages\n../app\nimport site\n", encoding="utf-8")
+    retained_qt = prune_windows(runtime)
+    copy_licenses(DEST)
     app = DEST / "app"; app.mkdir(exist_ok=True)
     shutil.copytree(ROOT / "clinical_annotator", app / "clinical_annotator", ignore=shutil.ignore_patterns("__pycache__"), dirs_exist_ok=True)
     shutil.copy2(ROOT / "tools" / "windows_bootstrap.py", app / "run.py")
@@ -100,7 +107,7 @@ def main():
     path_audit = archive_path_audit(archive_paths)
     (DEST / "build-manifest.json").write_text(json.dumps({"version": "0.5.2", "platform": "Windows x64",
         "python": "3.13.17", "sha256": hashes, "gui_launcher": True,
-        "package_revision": PACKAGE_REVISION, "archive_path_audit": path_audit,
+        "package_revision": PACKAGE_REVISION, "qt_runtime_libraries": retained_qt, "archive_path_audit": path_audit,
         "native_windows_validation": False, "dependency_audit": audit}, ensure_ascii=False, indent=2), encoding="utf-8")
     (DEST / "使用说明.txt").write_text(
         "临绘 0.5.2 · Windows 64 位便携版\n\n请解压整个文件夹，双击「临绘.exe」。无需安装 Python 或 pip。\n"
@@ -110,7 +117,7 @@ def main():
         "已生成 Windows 原生 GUI 启动器，检查内置运行环境和依赖；当前构建环境为 macOS，尚未在 Windows 实机运行验收。\n"
         "窗口默认最大化；Shift+鼠标左键拖动连续采点；F5 放映/暂停；F11 全屏。\n"
         "遇到启动错误请提供 %LOCALAPPDATA%\\ContourNote\\startup.log。\n", encoding="utf-8-sig")
-    archive = ROOT.parent / "ContourNote-Windows-x64-v0.5.2.zip"
+    archive = ROOT.parent / "ContourNote-Windows-x64-v0.5.2-licensefix1.zip"
     archive_path_audit(Path(ARCHIVE_ROOT) / p.relative_to(DEST)
                        for p in DEST.rglob("*") if p.is_file())
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as z:

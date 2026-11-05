@@ -1,5 +1,11 @@
 [
   {
+    "version": "0.5.2-licensefix1",
+    "local_date": "2026-11-05",
+    "title": "许可证与对应源码补齐、双角色流程和完整历史入口",
+    "notes": "v0.5.2-licensefix1.md"
+  },
+  {
     "version": "0.5.2",
     "local_date": "2026-11-05",
     "title": "手动确认重画、可关闭提示、移除记录页面",

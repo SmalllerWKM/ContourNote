@@ -13,9 +13,9 @@ from pathlib import Path
 from PySide6.QtCore import QSignalBlocker, QThreadPool, QTimer, Qt
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
-    QApplication, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog,
+    QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QDoubleSpinBox, QFileDialog,
     QGroupBox, QInputDialog, QLineEdit, QListWidgetItem, QMainWindow,
-    QMessageBox, QSpinBox, QTextEdit, QVBoxLayout,
+    QMessageBox, QSpinBox, QTextBrowser, QTextEdit, QVBoxLayout,
 )
 
 from .data import (
@@ -1002,6 +1002,46 @@ class MainWindow(QMainWindow):
         finally:
             QApplication.restoreOverrideCursor()
         QMessageBox.information(self, "导出完成", f"{destination}\n\n{len(docs)} 张图片，{len(result['annotations'])} 个 COCO 区域/框。\n包含 Labelme JSON、COCO、语义 Mask、弱提示 Mask 和类别映射。\n点/线仅进入弱标注文件，弱框的 COCO segmentation 为空。")
+
+    def show_licenses(self):
+        candidates = [Path(__file__).resolve().parents[1] / "licenses",
+                      Path(sys.executable).resolve().parents[1] / "licenses",
+                      Path(sys.executable).parent.parent / "Resources" / "licenses"]
+        if getattr(sys, "frozen", False):
+            candidates.insert(0, Path(sys._MEIPASS) / "licenses")
+        directory = next((p for p in candidates if (p / "LGPL-3.0-only.txt").is_file()), None)
+        if directory is None:
+            QMessageBox.warning(self, "开源许可", "许可证目录缺失，请使用包含完整 licenses 目录的发行包。")
+            return
+        dialog = QDialog(self)
+        dialog.setWindowTitle("开源许可与第三方组件")
+        dialog.resize(860, 650)
+        layout = QVBoxLayout(dialog)
+        notice = QTextBrowser()
+        notice.setMaximumHeight(135)
+        notice.setOpenExternalLinks(True)
+        notice.setHtml("<b>临绘独立源码：MIT</b><br>本软件使用 PySide6 / Qt（LGPLv3）和 Shapely / GEOS（LGPLv2.1），"
+                       "以及 Python、NumPy、Pillow 等第三方组件。第三方组件保留各自许可证。<br>"
+                       "允许按适用许可证修改、替换和重新链接这些库；不限制为此目的进行的逆向工程。<br>"
+                       '<a href="https://github.com/SmalllerWKM/ContourNote/releases">对应源码与替换说明：GitHub Releases</a>')
+        layout.addWidget(notice)
+        choices = QComboBox()
+        paths = sorted(p for p in directory.rglob("*") if p.is_file() and p.suffix in {".txt", ".md"})
+        for path in paths:
+            choices.addItem(str(path.relative_to(directory)), path)
+        layout.addWidget(choices)
+        text = QTextBrowser()
+        text.setReadOnly(True)
+        def display():
+            path = choices.currentData()
+            text.setPlainText(path.read_text(encoding="utf-8", errors="replace") if path else "")
+        choices.currentIndexChanged.connect(display)
+        layout.addWidget(text, 1)
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
+        buttons.rejected.connect(dialog.reject)
+        layout.addWidget(buttons)
+        display()
+        dialog.exec()
 
     def show_help(self):
         QMessageBox.information(self, "快捷键与操作", "A 轮廓 · E 编辑 · B 框 · P 点 · L 线 · G 涂鸦 · C 圆 · H 小手\n"

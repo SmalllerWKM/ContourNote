@@ -194,7 +194,10 @@ def build_window(w, tools, combo):
     rail.setFixedWidth(max(112, max(b.sizeHint().width() for b in w.tool_buttons.values())+14))
     rl.addWidget(separator()); rl.addWidget(tool("", w.undo, "undo")); rl.itemAt(rl.count()-1).widget().setToolTip("撤销 Ctrl+Z")
     rl.addWidget(tool("", w.redo, "redo")); rl.itemAt(rl.count()-1).widget().setToolTip("重做 Ctrl+Y")
-    rl.addStretch(); body.addWidget(rail)
+    rl.addStretch()
+    w.licenses_button = tool("开源许可", w.show_licenses)
+    rl.addWidget(w.licenses_button)
+    body.addWidget(rail)
 
     splitter = QSplitter(); body.addWidget(splitter, 1)
     middle = QWidget(); ml = QVBoxLayout(middle); ml.setContentsMargins(0, 0, 0, 0); ml.setSpacing(0)

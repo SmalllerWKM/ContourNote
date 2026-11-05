@@ -13,3 +13,5 @@ ContourNote 的交互需求来自本工作区提供的医生标注功能梳理�
 可选的参考兼容性测试从本机 Labelme 仓库临时读取校验函数执行，不将该函数源代码复制到发布包。
 
 运行依赖为 PySide6、Pillow、NumPy、Shapely；验证依赖包括 pytest 和 pycocotools。各依赖的许可证由其发行包提供，未包含 AI 模型或权重。
+
+许可证修订版的完整第三方说明见 THIRD_PARTY_NOTICES.md；许可证全文、对应源码来源和替换库说明位于 licenses/，应用内“开源许可”可读取。独立源码的 MIT 不覆盖第三方库。

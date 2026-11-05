@@ -2,7 +2,16 @@
 
 本页于 2026-11-05 整理，当前应用版本 0.5.2。此次整理文档未修改运行代码，也未把历史测试当作重新执行。
 
-## 当前记录
+## 许可证修订包（0.5.2-licensefix1）
+
+- 原有 75 项回归测试和新增 4 项许可/打包/界面测试通过，总计 79 项。
+- 许可证正文、257 份上游归属文件与哈希索引均纳入源码和运行包；Windows 最长包内路径仍为 108 UTF-16 单位。
+- Mac 独立应用原生启动，frozen=true；JSON 保存、COCO 导出和窗口渲染通过。原生“开源许可”窗口可打开并显示正文。
+- Mac 保留 Qt Core/DBus/GUI/Network/OpenGL/SVG/Widgets；逐个 Mach-O 依赖检查未再引用已排除的 PDF、虚拟键盘和 QML/Quick 库。
+- Windows 保留 Qt Core/GUI/SVG/Widgets，78 个 PE/DLL/PYD 静态依赖检查无未解决非系统 DLL；尚未 Windows 实机验收。
+- 对应源码为 Qt Base/SVG/Image Formats 6.12.0、PySide6/Shiboken6 6.12.0、GEOS 3.14.1 的完整上游归档，附来源和 SHA-256。
+
+## 0.5.2 原始记录
 
 - 本地开发环境：macOS，Python 3.12，PySide6 6.12；Qt 自动化使用 offscreen 后端。
 - 0.5.2：75 项自动化测试通过，包含关闭提示保留草稿、悬停/拖动不弹窗、点击确认、移除记录控件、新 JSON 无自动 clinical 字段、旧字段保留等。
