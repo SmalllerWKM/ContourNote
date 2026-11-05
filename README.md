@@ -14,7 +14,7 @@ Check the repository's [Releases page](https://github.com/SmalllerWKM/ContourNot
 
 | Platform | Runtime archive | Launch |
 |---|---|---|
-| macOS Apple Silicon arm64 | 临绘-macOS-Apple芯片-v0.5.2.zip | Extract and open 临绘 0.5.2.app |
+| macOS Apple Silicon arm64 | ContourNote-macOS-arm64-v0.5.2.zip | Extract and open 临绘 0.5.2.app |
 | Windows x64 | ContourNote-Windows-x64-v0.5.2.zip | Extract everything, open CN, run 临绘.exe |
 | Developer source | ContourNote-GitHub-source-v0.5.2.zip | Create an environment and install dependencies |
 

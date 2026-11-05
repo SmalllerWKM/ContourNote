@@ -14,7 +14,7 @@
 
 | 平台 | 当前运行包 | 启动方式 |
 |---|---|---|
-| Mac Apple 芯片 arm64 | 临绘-macOS-Apple芯片-v0.5.2.zip | 解压后双击“临绘 0.5.2.app” |
+| Mac Apple 芯片 arm64 | ContourNote-macOS-arm64-v0.5.2.zip | 解压后双击“临绘 0.5.2.app” |
 | Windows x64 | ContourNote-Windows-x64-v0.5.2.zip | 完整解压，进入 CN，双击“临绘.exe” |
 | 开发源码 | ContourNote-GitHub-source-v0.5.2.zip | 创建 Python 环境后运行 |
 
