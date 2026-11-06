@@ -50,7 +50,7 @@ def main():
     metadata_path = app / "Contents" / "Info.plist"
     metadata = plistlib.loads(metadata_path.read_bytes())
     metadata.update(CFBundleName="临绘", CFBundleDisplayName="临绘 ContourNote",
-                    CFBundleShortVersionString="0.6.0", CFBundleVersion="0.6.0")
+                    CFBundleShortVersionString="1.0.0", CFBundleVersion="1.0.0")
     metadata_path.write_bytes(plistlib.dumps(metadata))
     prune_macos(app)
     copy_licenses(app / "Contents" / "Resources")

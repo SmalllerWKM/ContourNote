@@ -1,12 +1,12 @@
 # 临绘 · ContourNote
 
-本地人工图像标注工具，当前应用版本 **0.6.0**。支持完整轮廓与点、框、线、涂鸦等弱提示，自动保存 Labelme 兼容 JSON，并导出 COCO、语义 Mask 和弱提示 Mask。没有 AI 模型或云端推理。
+本地人工图像标注工具，当前应用版本 **1.0.0**。支持完整轮廓与点、框、线、涂鸦等弱提示，自动保存 Labelme 兼容 JSON，并导出 COCO、语义 Mask 和弱提示 Mask。没有 AI 模型或云端推理。
 
-[English](README.md) · [完整更新日志](CHANGELOG.md) · [当前版本说明](docs/releases/v0.6.0.md) · [各版 Release 文案](docs/releases/README.md) · [已知问题](docs/KNOWN-ISSUES.md) · [验证范围](docs/VALIDATION.md) · [MIT](LICENSE)
+[English](README.md) · [完整更新日志](CHANGELOG.md) · [当前版本说明](docs/releases/v1.0.0.md) · [各版 Release 文案](docs/releases/README.md) · [已知问题](docs/KNOWN-ISSUES.md) · [验证范围](docs/VALIDATION.md) · [MIT](LICENSE)
 
-> 当前作为试用版本提供。跨项目自定义保存目录和 Windows 跨盘保存存在已知问题；Windows 包尚未实机验收。中英文文档不代表英文界面，软件界面目前为中文。
+> 当前正式版本为 1.0.0。跨项目自定义保存目录和 Windows 跨盘保存存在已知问题；Windows 包尚未实机验收。中英文文档不代表英文界面，软件界面目前为中文。
 
-![0.6.0 工作台：帧复制与放映直接展开，底栏显示操作状态](docs/images/workspace-v0.6.0.png)
+![1.0.0 工作台：帧复制与放映直接展开，底栏显示操作状态](docs/images/workspace-v1.0.0.png)
 
 ## 下载与启动
 
@@ -14,9 +14,9 @@
 
 | 平台 | 当前运行包 | 启动方式 |
 |---|---|---|
-| Mac Apple 芯片 arm64 | ContourNote-macOS-arm64-v0.6.0.zip | 解压后双击“临绘 0.6.0.app” |
-| Windows x64 | ContourNote-Windows-x64-v0.6.0.zip | 完整解压，进入 CN，双击“临绘.exe” |
-| 开发源码 | ContourNote-source-v0.6.0.zip | 创建 Python 环境后运行 |
+| Mac Apple 芯片 arm64 | ContourNote-macOS-arm64-v1.0.0.zip | 解压后双击“临绘 1.0.0.app” |
+| Windows x64 | ContourNote-Windows-x64-v1.0.0.zip | 完整解压，进入 CN，双击“临绘.exe” |
+| 开发源码 | ContourNote-source-v1.0.0.zip | 创建 Python 环境后运行 |
 
 运行包包含 Python、Qt 和依赖，无需自行创建 .venv。Windows 请保留 EXE 旁边的 runtime 和 app 文件夹，避免深层解压路径。Mac 包为本地 ad-hoc 签名，未做 Apple 开发者证书签名或公证。目前没有 Intel Mac、Windows ARM64 或 Linux 独立运行包。
 
@@ -134,7 +134,7 @@ python -m venv .venv
 QT_QPA_PLATFORM=offscreen .venv/bin/python -m pytest -q
 ```
 
-本地 0.6.0 测试记录为 86 项通过，Mac 独立应用保存/导出/渲染通过；Windows 仅静态包与依赖检查。外部 Labelme 对照测试在没有参考仓库时会跳过，数量可能不同。详见 [验证说明](docs/VALIDATION.md)。
+本地 1.0.0 测试记录为 86 项通过，Mac 独立应用保存/导出/渲染通过；Windows 仅静态包与依赖检查。外部 Labelme 对照测试在没有参考仓库时会跳过，数量可能不同。详见 [验证说明](docs/VALIDATION.md)。
 
 ## 完整版本更新
 
@@ -142,6 +142,7 @@ QT_QPA_PLATFORM=offscreen .venv/bin/python -m pytest -q
 
 | 版本 | 主要变化 | 本地日期 |
 |---|---|---|
+| [1.0.0](docs/releases/v1.0.0.md) | 基于 0.6.0 功能发布首个正式版，统一应用与运行包版本 | 2026-11-06 |
 | [0.6.0](docs/releases/v0.6.0.md) | 减少弹窗、默认大块与灰色小块、可见复制/放映控件 | 2026-11-06 |
 | [0.5.2-licensefix1](docs/releases/v0.5.2-licensefix1.md) | 许可证与对应源码、双角色流程说明、全部版本入口 | 2026-11-05 |
 | [0.5.2](docs/releases/v0.5.2.md) | 手动确认重画、可关闭提示、移除记录页面 | 2026-11-05 |
@@ -163,7 +164,7 @@ QT_QPA_PLATFORM=offscreen .venv/bin/python -m pytest -q
 
 第三方版权与 LGPL 权利、对应源码及替换方式见 [第三方组件说明](THIRD_PARTY_NOTICES.md)和 [licenses](licenses/REPLACING-LIBRARIES.md)。许可证修订版随应用免费提供 Qt/PySide6/GEOS 对应源码附件，应用内左下角可打开“开源许可”。
 
-## 0.6.0 减少弹窗
+## 1.0.0 操作方式（沿用 0.6.0）
 
 复制上一帧及多帧复制均在画布底栏反馈成功或失败，不弹出常规确认/完成框。顶部输入 X（默认 1）后，连续复制后续 X 帧；目标帧的 JSON 保存复制来源，重新打开仍提示“本帧标注来自于前帧的复制，请仔细检查”。原目标 JSON 会保留上一版备份。
 

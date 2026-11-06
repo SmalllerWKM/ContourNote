@@ -1,12 +1,12 @@
 # ContourNote · 临绘
 
-An offline manual image annotation workspace. Application version: **0.6.0**. Supports full regions, weak point/box/line/scribble cues, live Labelme-compatible JSON saving, COCO, and masks. No AI models or cloud inference are included.
+An offline manual image annotation workspace. Application version: **1.0.0**. Supports full regions, weak point/box/line/scribble cues, live Labelme-compatible JSON saving, COCO, and masks. No AI models or cloud inference are included.
 
-[简体中文](README.zh-CN.md) · [Changelog (Chinese)](CHANGELOG.md) · [Current release notes](docs/releases/v0.6.0.md) · [Known issues](docs/KNOWN-ISSUES.md) · [Validation](docs/VALIDATION.md) · [MIT license](LICENSE)
+[简体中文](README.zh-CN.md) · [Changelog (Chinese)](CHANGELOG.md) · [Current release notes](docs/releases/v1.0.0.md) · [Known issues](docs/KNOWN-ISSUES.md) · [Validation](docs/VALIDATION.md) · [MIT license](LICENSE)
 
-> This is a trial build. Custom annotation directories can carry over between projects, and Windows cross-drive saving has a known path issue. Windows has not undergone native runtime acceptance testing. The application UI is Chinese; English documentation is not an English language pack.
+> The current official release is v1.0.0. Custom annotation directories can carry over between projects, and Windows cross-drive saving has a known path issue. Windows has not undergone native runtime acceptance testing. The application UI is Chinese; English documentation is not an English language pack.
 
-![v0.6.0 workspace with visible frame-copy and slideshow controls](docs/images/workspace-v0.6.0.png)
+![v1.0.0 workspace with visible frame-copy and slideshow controls](docs/images/workspace-v1.0.0.png)
 
 ## Download and run
 
@@ -14,9 +14,9 @@ Check the repository's [Releases page](https://github.com/SmalllerWKM/ContourNot
 
 | Platform | Runtime archive | Launch |
 |---|---|---|
-| macOS Apple Silicon arm64 | ContourNote-macOS-arm64-v0.6.0.zip | Extract and open 临绘 0.6.0.app |
-| Windows x64 | ContourNote-Windows-x64-v0.6.0.zip | Extract everything, open CN, run 临绘.exe |
-| Developer source | ContourNote-source-v0.6.0.zip | Create an environment and install dependencies |
+| macOS Apple Silicon arm64 | ContourNote-macOS-arm64-v1.0.0.zip | Extract and open 临绘 1.0.0.app |
+| Windows x64 | ContourNote-Windows-x64-v1.0.0.zip | Extract everything, open CN, run 临绘.exe |
+| Developer source | ContourNote-source-v1.0.0.zip | Create an environment and install dependencies |
 
 Runtime packages include Python and Qt. Keep the Windows runtime and app directories beside the EXE. The Mac package is ad-hoc signed, not Apple Developer signed or notarized. No Intel Mac, Windows ARM64, or Linux standalone package is provided.
 
@@ -105,7 +105,7 @@ python -m venv .venv
 .venv\Scripts\python.exe run.py
 ```
 
-The local v0.6.0 record is 86 passing tests plus a native frozen Mac startup/save/export/render check. Windows validation is static. An optional upstream Labelme reference test is skipped when that external checkout is absent. These checks do not establish clinical accuracy or quantified annotation efficiency.
+The local v1.0.0 record is 86 passing tests plus a native frozen Mac startup/save/export/render check. Windows validation is static. An optional upstream Labelme reference test is skipped when that external checkout is absent. These checks do not establish clinical accuracy or quantified annotation efficiency.
 
 For manual GitHub publication, see the [upload guide (Chinese)](docs/GITHUB-MANUAL-UPLOAD.zh-CN.md). Original source is MIT-licensed; dependencies retain their own licenses. Labelme is an external interaction/format reference; see [NOTICE](NOTICE.md).
 
@@ -115,6 +115,7 @@ For manual GitHub publication, see the [upload guide (Chinese)](docs/GITHUB-MANU
 
 | Version | Main changes | Local date |
 |---|---|---|
+| [1.0.0](docs/releases/v1.0.0.md) | First official release based on v0.6.0, with matching application and package versions | 2026-11-06 |
 | [0.6.0](docs/releases/v0.6.0.md) | Fewer dialogs, direct region selection, visible copy/slideshow controls | 2026-11-06 |
 | [0.5.2-licensefix1](docs/releases/v0.5.2-licensefix1.md) | Licenses and corresponding source; two-workflow guide and complete history links | 2026-11-05 |
 | [0.5.2](docs/releases/v0.5.2.md) | Click-confirmed redraw and removable notices; record UI removed | 2026-11-05 |
@@ -132,7 +133,7 @@ For manual GitHub publication, see the [upload guide (Chinese)](docs/GITHUB-MANU
 
 See [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md) and the [replacement/rebuild guide](licenses/REPLACING-LIBRARIES.md). The licensefix1 revision includes license texts, a visible in-app license viewer and a separate free Qt/PySide6/GEOS corresponding-source download.
 
-## 0.6.0: fewer dialogs
+## 1.0.0 workflow (carried forward from v0.6.0)
 
 Frame copy reports completion or failure in the canvas footer. Set X (default 1) to copy to the next X frames. Copied JSON retains a source-image marker and shows a persistent inspection reminder on load. Existing destination JSON has a previous-version backup.
 
