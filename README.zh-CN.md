@@ -1,12 +1,12 @@
 # 临绘 · ContourNote
 
-本地人工图像标注工具，当前应用版本 **0.5.2**，推荐下载 **licensefix1 许可证修订包**。支持完整轮廓与点、框、线、涂鸦等弱提示，自动保存 Labelme 兼容 JSON，并导出 COCO、语义 Mask 和弱提示 Mask。没有 AI 模型或云端推理。
+本地人工图像标注工具，当前应用版本 **0.6.0**。支持完整轮廓与点、框、线、涂鸦等弱提示，自动保存 Labelme 兼容 JSON，并导出 COCO、语义 Mask 和弱提示 Mask。没有 AI 模型或云端推理。
 
-[English](README.md) · [完整更新日志](CHANGELOG.md) · [当前版本说明](docs/releases/v0.5.2-licensefix1.md) · [各版 Release 文案](docs/releases/README.md) · [已知问题](docs/KNOWN-ISSUES.md) · [验证范围](docs/VALIDATION.md) · [MIT](LICENSE)
+[English](README.md) · [完整更新日志](CHANGELOG.md) · [当前版本说明](docs/releases/v0.6.0.md) · [各版 Release 文案](docs/releases/README.md) · [已知问题](docs/KNOWN-ISSUES.md) · [验证范围](docs/VALIDATION.md) · [MIT](LICENSE)
 
 > 当前作为试用版本提供。跨项目自定义保存目录和 Windows 跨盘保存存在已知问题；Windows 包尚未实机验收。中英文文档不代表英文界面，软件界面目前为中文。
 
-![0.5.2 工作台：已移除记录页，示例为合成图像中的边界重画草稿](docs/images/workspace-v0.5.2.png)
+![0.6.0 工作台：帧复制与放映直接展开，底栏显示操作状态](docs/images/workspace-v0.6.0.png)
 
 ## 下载与启动
 
@@ -14,9 +14,9 @@
 
 | 平台 | 当前运行包 | 启动方式 |
 |---|---|---|
-| Mac Apple 芯片 arm64 | ContourNote-macOS-arm64-v0.5.2-licensefix1.zip | 解压后双击“临绘 0.5.2 许可证修订.app” |
-| Windows x64 | ContourNote-Windows-x64-v0.5.2-licensefix1.zip | 完整解压，进入 CN，双击“临绘.exe” |
-| 开发源码 | ContourNote-source-v0.5.2-licensefix1.zip | 创建 Python 环境后运行 |
+| Mac Apple 芯片 arm64 | ContourNote-macOS-arm64-v0.6.0.zip | 解压后双击“临绘 0.6.0.app” |
+| Windows x64 | ContourNote-Windows-x64-v0.6.0.zip | 完整解压，进入 CN，双击“临绘.exe” |
+| 开发源码 | ContourNote-source-v0.6.0.zip | 创建 Python 环境后运行 |
 
 运行包包含 Python、Qt 和依赖，无需自行创建 .venv。Windows 请保留 EXE 旁边的 runtime 和 app 文件夹，避免深层解压路径。Mac 包为本地 ad-hoc 签名，未做 Apple 开发者证书签名或公证。目前没有 Intel Mac、Windows ARM64 或 Linux 独立运行包。
 
@@ -44,7 +44,7 @@
 | 审查修改者 | 检查现有标注，在原有基础上修正坐标点或一段边界 | 打开已有 JSON → E 选择编辑 → 拖动节点或双击边界局部重画 |
 
 例如，一段脊柱内窥镜组织轮廓画偏了：审查者可双击该段起点，沿正确边缘补画，
-再**单击原轮廓另一处边线**，在蓝/橙预览中选择保留区域；其他已完成的标注继续保留。
+再**单击原轮廓另一处边线**，默认保留大块；双击灰色小块可改留小块；其他已完成的标注继续保留。
 
 两类使用者共享 Labelme JSON，不需要转换为另一套标注格式。这是流程分工；当前没有人员账号、
 权限或初标/复核差异版本系统。自动保存更新当前 JSON；若需分别留存初标与复核数据，交接前复制完整项目到独立目录。
@@ -62,7 +62,7 @@
 
 - E 进入选择编辑；单击节点拖动，单击边线可添加并拖动节点。
 - 双击已有完整多边形节点或边线开始重画，逐点或 Shift＋左键描绘新边界。
-- **点击原轮廓另一处边线才确认终点**，随后按蓝、橙预览选择保留区域。仅靠近、悬停、经过或拖动经过不会自动弹窗。
+- **点击原轮廓另一处边线才确认终点**，随后默认保留大块并保存，小块呈灰色；双击灰色小块可改留小块。仅靠近、悬停、经过或拖动经过不会自动弹窗。
 - 无效路径会保留草稿并说明原因；黄色提示条可“关闭提示”，不会丢弃草稿。Esc 取消，绘制中 Ctrl＋Z 撤回一点。
 - Tab 在画布内切换选择编辑与多边形；输入框内保留正常 Tab 行为。
 
@@ -82,7 +82,7 @@
 
 外部修改会提示冲突，需重新载入或确认覆盖。已标注图片显示勾选，但勾选不代替磁盘保存状态；0.5.2 以形状或 Labelme flags 判定，不再以旧记录字段判定。
 
-大项目的类别和勾选后台索引，切帧不全量重扫。上一帧、下一帧、复制和向后 N 帧传播在顶部；帧复用只复制坐标，不跟踪运动，来源与目标尺寸需一致。图片放映在菜单中，可设 0.1-120 秒/张，F5 开始/暂停。
+大项目的类别和勾选后台索引，切帧不全量重扫。上一帧、下一帧、复制和连续复制后续 X 帧（默认 1）在顶部；帧复用只复制坐标，不跟踪运动，来源与目标尺寸需一致。图片放映控件直接显示在顶部，可设 0.1-120 秒/张，F5 开始/暂停。
 
 ## 数据兼容与导出
 
@@ -134,7 +134,7 @@ python -m venv .venv
 QT_QPA_PLATFORM=offscreen .venv/bin/python -m pytest -q
 ```
 
-本地 0.5.2 测试记录为 75 项通过，Mac 独立应用保存/导出/渲染通过；Windows 仅静态包与依赖检查。外部 Labelme 对照测试在没有参考仓库时会跳过，数量可能不同。详见 [验证说明](docs/VALIDATION.md)。
+本地 0.6.0 测试记录为 86 项通过，Mac 独立应用保存/导出/渲染通过；Windows 仅静态包与依赖检查。外部 Labelme 对照测试在没有参考仓库时会跳过，数量可能不同。详见 [验证说明](docs/VALIDATION.md)。
 
 ## 完整版本更新
 
@@ -142,8 +142,9 @@ QT_QPA_PLATFORM=offscreen .venv/bin/python -m pytest -q
 
 | 版本 | 主要变化 | 本地日期 |
 |---|---|---|
+| [0.6.0](docs/releases/v0.6.0.md) | 减少弹窗、默认大块与灰色小块、可见复制/放映控件 | 2026-11-06 |
 | [0.5.2-licensefix1](docs/releases/v0.5.2-licensefix1.md) | 许可证与对应源码、双角色流程说明、全部版本入口 | 2026-11-05 |
-| [0.5.2](docs/releases/v0.5.2-licensefix1.md) | 手动确认重画、可关闭提示、移除记录页面 | 2026-11-05 |
+| [0.5.2](docs/releases/v0.5.2.md) | 手动确认重画、可关闭提示、移除记录页面 | 2026-11-05 |
 | [0.5.1](docs/releases/v0.5.1.md) | 无效视野落点投影与重画闭合修复 | 2026-11-05 |
 | [0.5.0](docs/releases/v0.5.0.md) | 渐变有效视野与统一边界编辑 | 2026-11-05 |
 | [0.4.1](docs/releases/v0.4.1.md) | 区域运算真实操作流程修复 | 2026-11-03 |
@@ -161,3 +162,11 @@ QT_QPA_PLATFORM=offscreen .venv/bin/python -m pytest -q
 独立源码采用 MIT，依赖遵循各自许可证。Labelme 为交互与格式参考，没有将其应用源码或图标复制进本项目。见 [NOTICE](NOTICE.md)。
 
 第三方版权与 LGPL 权利、对应源码及替换方式见 [第三方组件说明](THIRD_PARTY_NOTICES.md)和 [licenses](licenses/REPLACING-LIBRARIES.md)。许可证修订版随应用免费提供 Qt/PySide6/GEOS 对应源码附件，应用内左下角可打开“开源许可”。
+
+## 0.6.0 减少弹窗
+
+复制上一帧及多帧复制均在画布底栏反馈成功或失败，不弹出常规确认/完成框。顶部输入 X（默认 1）后，连续复制后续 X 帧；目标帧的 JSON 保存复制来源，重新打开仍提示“本帧标注来自于前帧的复制，请仔细检查”。原目标 JSON 会保留上一版备份。
+
+局部重画完成后默认保留大块，自动保存开启时立即写入 JSON；灰色小块仅供选择，双击可改留小块。单击其他位置、切换工具/图像或撤销后结束候选选择。关闭自动保存时需手动保存。Mac 同时支持 Command 和物理 Control 的 C/V/S，Windows 使用 Ctrl+C/V/S；输入框保留文本复制粘贴行为。放映速度、循环、开始/暂停均直接展开。
+
+[Mac 快捷键 / Mac shortcuts](docs/MAC-SHORTCUTS.zh-CN.md)

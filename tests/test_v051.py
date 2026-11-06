@@ -43,7 +43,7 @@ def test_invalid_reconnect_shows_reason_and_keeps_original(window,monkeypatch):
     warnings=[];monkeypatch.setattr(QMessageBox,'warning',lambda *a,**k:warnings.append(a[2]))
     # Following the same top edge encloses no new area.
     QTest.mouseClick(c,Qt.MouseButton.LeftButton,pos=screen(c,150,40))
-    assert warnings and w.doc.shapes==[shape] and c.draft
+    assert not warnings and w.operation_notice.isVisible() and w.doc.shapes==[shape] and c.draft
 
 
 def test_physical_double_click_sequence_then_edge_click(window,monkeypatch):

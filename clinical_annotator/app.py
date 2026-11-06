@@ -328,6 +328,8 @@ class MainWindow(QMainWindow):
         shortcuts += [("Tab", self.toggle_edit_polygon), ("F5", self.toggle_slideshow), ("F11", self.toggle_fullscreen)]
         shortcuts += [(key, lambda: self.navigate(-1)) for key in ["Left", "Up", "W"]]
         shortcuts += [(key, lambda: self.navigate(1)) for key in ["Right", "Down", "D"]]
+        if sys.platform == "darwin":
+            shortcuts += [("Meta+C", self.copy_selected), ("Meta+V", self.paste_selected), ("Meta+S", self.save_live)]
         for key, callback in shortcuts:
             short = QShortcut(QKeySequence(key), self.canvas if key == "Tab" else self)
             if key == "Tab":
@@ -338,6 +340,11 @@ class MainWindow(QMainWindow):
     def shortcut_action(self, callback):
         # Annotation keys must not steal characters or editing commands from fields.
         focus = QApplication.focusWidget()
+        if isinstance(focus, (QLineEdit, QTextEdit, QSpinBox, QDoubleSpinBox, QComboBox)) and callback in {self.copy_selected, self.paste_selected}:
+            editor = focus.lineEdit() if isinstance(focus, (QComboBox, QSpinBox, QDoubleSpinBox)) else focus
+            if editor is not None:
+                editor.copy() if callback == self.copy_selected else editor.paste()
+            return
         if isinstance(focus, (QLineEdit, QTextEdit, QSpinBox, QDoubleSpinBox, QComboBox)) and callback not in {
                 self.save_live, self.open_file, self.open_folder, self.open_annotation, self.show_help,
                 self.toggle_slideshow, self.toggle_fullscreen}:
@@ -518,6 +525,7 @@ class MainWindow(QMainWindow):
             self.restore_history()
 
     def restore_history(self):
+        self.canvas.clear_reshape_alternative()
         self.doc.restore(self.history[self.history_index])
         self.canvas.selected.clear()
         self.canvas.hidden.clear()
@@ -837,6 +845,7 @@ class MainWindow(QMainWindow):
                 QMessageBox.warning(self, "草稿恢复失败", str(exc))
         self.update_file_status()
         self.refresh_file_state()
+        self.show_copy_origin()
         self.canvas.setFocus()
 
     def navigate(self, step):
@@ -929,18 +938,43 @@ class MainWindow(QMainWindow):
         except Exception as exc:
             QMessageBox.critical(self, "切换保存目录失败", f"已复制 {completed} 个 JSON；当前保存路径保持原设置。\n{exc}")
 
+    def show_workflow_status(self, text):
+        self.workflow_status.setText(text)
+        self.statusBar().showMessage(text)
+
+    def copy_provenance(self, source, target):
+        target.extra["contour_note_copy"] = {
+            "source_image": source.image.name,
+            "copied_at": datetime.now().astimezone().isoformat(timespec="seconds"),
+            "weak_only": bool(self.weak_copy.isChecked()),
+        }
+
+    def show_copy_origin(self):
+        origin = self.doc.extra.get("contour_note_copy") if self.doc else None
+        if isinstance(origin, dict) and isinstance(origin.get("source_image"), str):
+            self.show_workflow_status(f"本帧标注来自于前帧的复制（{origin['source_image']}），请仔细检查。")
+        else:
+            self.show_workflow_status("就绪")
+
     def copy_previous(self):
         self.pause_slideshow()
         if self.current <= 0:
+            self.show_workflow_status("没有上一帧可复制。")
             return
         if not self.can_leave():
             return
         try:
             previous = load_document(self.images[self.current-1], self.label_path(self.images[self.current-1]))
             self.copy_into(previous, self.doc, bool(self.weak_copy.isChecked()))
+            self.copy_provenance(previous, self.doc)
+            self.canvas.clear_reshape_alternative()
             self.commit()
+            if self.last_error:
+                self.show_workflow_status(f"复制完成但保存失败：{self.last_error}")
+            else:
+                self.show_workflow_status("复制成功；" + ("已保存。" if self.autosave.isChecked() else "自动保存已关闭，请保存。") + "本帧标注来自于前帧的复制，请仔细检查。")
         except Exception as exc:
-            QMessageBox.warning(self, "复制失败", str(exc))
+            self.show_workflow_status(f"复制失败：{exc}")
 
     def copy_into(self, source, target, weak_only):
         if (source.width, source.height) != (target.width, target.height):
@@ -948,38 +982,39 @@ class MainWindow(QMainWindow):
         selected = [s for s in source.shapes if not weak_only or s.weak]
         if not selected:
             raise ValueError("来源帧没有可复制的标注。")
-        if QMessageBox.question(self, "复用相邻帧标签", "将替换目标帧相同范围的标注。仅复制坐标，不会自动跟踪，请逐帧复核。是否继续？") != QMessageBox.StandardButton.Yes:
-            raise ValueError("已取消复制")
         target.shapes = ([s for s in target.shapes if not s.weak] if weak_only else []) + copy.deepcopy(selected)
 
     def propagate(self):
         self.pause_slideshow()
-        if not self.doc or self.current >= len(self.images)-1 or not self.can_leave():
+        if not self.doc or not self.can_leave():
             return
-        count, ok = QInputDialog.getInt(self, "传播标签", "复制到后续多少帧？", 1, 1, len(self.images)-self.current-1)
-        if not ok:
+        count = self.copy_frame_count.value()
+        if self.current + count >= len(self.images):
+            self.show_workflow_status(f"复制未开始：后续仅剩 {len(self.images)-self.current-1} 帧，请调整帧数。")
             return
         weak = self.weak_copy.isChecked()
         selected = [s for s in self.doc.shapes if not weak or s.weak]
         if not selected:
-            QMessageBox.information(self, "没有可传播标记", "请先创建相应标记。")
-            return
-        if QMessageBox.question(self, "确认传播", f"将替换后 {count} 帧的{'弱标注（保留完整轮廓）' if weak else '全部标记'}，原 JSON 会备份。仅复制坐标，请逐帧复核。") != QMessageBox.StandardButton.Yes:
+            self.show_workflow_status("没有可复制的标注，请先创建相应标记。")
             return
         completed = 0
         try:
             targets = [load_document(p, self.label_path(p)) for p in self.images[self.current+1:self.current+count+1]]
             if any((d.width, d.height) != (self.doc.width, self.doc.height) for d in targets):
-                raise ValueError("后续图片尺寸不一致，未写入任何传播标签。")
+                raise ValueError("后续图片尺寸不一致，未写入复制标签。")
+            paths = [self.label_path(d.image).resolve() for d in targets]
+            if len(set(paths + [self.label_path().resolve()])) != len(paths)+1:
+                raise ValueError("保存路径存在同名冲突，未写入复制标签。")
             for target in targets:
-                target.shapes = ([s for s in target.shapes if not s.weak] if weak else []) + copy.deepcopy(selected)
+                self.copy_into(self.doc, target, weak)
+                self.copy_provenance(self.doc, target)
                 path = self.label_path(target.image)
                 atomic_json(path, target.to_dict(path), backup=True)
                 completed += 1
             self.refresh_all_file_status()
-            QMessageBox.information(self, "传播完成", f"已复制到 {completed} 帧，请逐帧人工复核。")
+            self.show_workflow_status(f"复制已完成：后续 {completed} 帧，至第 {self.current+count+1} 帧，请逐帧检查。")
         except Exception as exc:
-            QMessageBox.warning(self, "传播停止", f"已写入 {completed} 帧；{exc}")
+            self.show_workflow_status(f"复制停止：已完成 {completed} 帧；{exc}")
 
     def export_project(self):
         self.pause_slideshow()
@@ -1048,7 +1083,7 @@ class MainWindow(QMainWindow):
             "Shift＋鼠标左键拖动：轮廓/线连续采点；松开左键停止，右键或 Enter 完成\n"
             "轮廓接近起点自动闭合；绘制设置中可调整闭合距离或关闭\n"
             "编辑时 Shift＋点击边线：增加节点；右键节点：删除节点\n"
-            "选择编辑：单击边界拖动节点；双击节点/边线开始重画，接回原边界完成\n"
+            "选择编辑：单击边界拖动节点；双击节点/边线开始重画，点击原边界后默认保留大块；双击灰色区域改留小块\n"
             "空格＋左键 / 中键 / Alt＋左键：平移；滚轮：缩放\n"
             "W / ← / ↑ 上一帧；D / → / ↓ 下一帧\n"
             "F / Ctrl+F 适应窗口；1 / Ctrl+0 原始大小；T 显隐\n"
@@ -1058,7 +1093,7 @@ class MainWindow(QMainWindow):
             "Ctrl+N 轮廓；Ctrl+R 框；Ctrl+J 编辑；Ctrl+O 打开；Ctrl+U 文件夹\n"
             "Esc 取消草稿；多选使用 Ctrl＋点击或标记列表\n"
             "顶部可开关自动保存；侧栏显示磁盘文件真实修改时间\n"
-            "F5 放映/暂停，图片放映菜单设置速度；F11 全屏\n"
+            "F5 放映/暂停，顶部图片放映栏设置速度；F11 全屏\n"
             "macOS 的 Ctrl 组合使用 Command；为保留医生习惯，A 用于轮廓，上一帧使用 W。\n"
             "填充透明度和显隐仅影响显示，导出仍包含标记。")
 

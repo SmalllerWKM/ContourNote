@@ -1,12 +1,12 @@
 # ContourNote · 临绘
 
-An offline manual image annotation workspace. Application version: **0.5.2**; use the **licensefix1 packaging revision**. Supports full regions, weak point/box/line/scribble cues, live Labelme-compatible JSON saving, COCO, and masks. No AI models or cloud inference are included.
+An offline manual image annotation workspace. Application version: **0.6.0**. Supports full regions, weak point/box/line/scribble cues, live Labelme-compatible JSON saving, COCO, and masks. No AI models or cloud inference are included.
 
-[简体中文](README.zh-CN.md) · [Changelog (Chinese)](CHANGELOG.md) · [Current release notes](docs/releases/v0.5.2-licensefix1.md) · [Known issues](docs/KNOWN-ISSUES.md) · [Validation](docs/VALIDATION.md) · [MIT license](LICENSE)
+[简体中文](README.zh-CN.md) · [Changelog (Chinese)](CHANGELOG.md) · [Current release notes](docs/releases/v0.6.0.md) · [Known issues](docs/KNOWN-ISSUES.md) · [Validation](docs/VALIDATION.md) · [MIT license](LICENSE)
 
 > This is a trial build. Custom annotation directories can carry over between projects, and Windows cross-drive saving has a known path issue. Windows has not undergone native runtime acceptance testing. The application UI is Chinese; English documentation is not an English language pack.
 
-![v0.5.2 workspace with a synthetic boundary-redraw draft; the record tab has been removed](docs/images/workspace-v0.5.2.png)
+![v0.6.0 workspace with visible frame-copy and slideshow controls](docs/images/workspace-v0.6.0.png)
 
 ## Download and run
 
@@ -14,9 +14,9 @@ Check the repository's [Releases page](https://github.com/SmalllerWKM/ContourNot
 
 | Platform | Runtime archive | Launch |
 |---|---|---|
-| macOS Apple Silicon arm64 | ContourNote-macOS-arm64-v0.5.2-licensefix1.zip | Extract and open 临绘 0.5.2 许可证修订.app |
-| Windows x64 | ContourNote-Windows-x64-v0.5.2-licensefix1.zip | Extract everything, open CN, run 临绘.exe |
-| Developer source | ContourNote-source-v0.5.2-licensefix1.zip | Create an environment and install dependencies |
+| macOS Apple Silicon arm64 | ContourNote-macOS-arm64-v0.6.0.zip | Extract and open 临绘 0.6.0.app |
+| Windows x64 | ContourNote-Windows-x64-v0.6.0.zip | Extract everything, open CN, run 临绘.exe |
+| Developer source | ContourNote-source-v0.6.0.zip | Create an environment and install dependencies |
 
 Runtime packages include Python and Qt. Keep the Windows runtime and app directories beside the EXE. The Mac package is ad-hoc signed, not Apple Developer signed or notarized. No Intel Mac, Windows ARM64, or Linux standalone package is provided.
 
@@ -47,7 +47,7 @@ clinical accuracy or annotation speed.
 
 A reviewer can correct one segment of a previously annotated endoscopic boundary:
 start by double-clicking its node/edge, draw the replacement, **click another point
-on the original edge**, and select the retained region from the two previews.
+on the original edge**, and keep the larger region by default or double-click the gray smaller region.
 Other annotations remain available; a complete delete-and-redraw is unnecessary.
 
 The two users exchange the same editable Labelme JSON. They are workflow roles,
@@ -62,7 +62,7 @@ See the [annotator/reviewer guide](docs/ANNOTATOR-REVIEWER.md).
 2. Use A for a polygon, B for a box, or P for a point. Choose full regions or weak foreground/background cues as appropriate.
 3. Click vertices or hold Shift and drag with the left mouse button. New polygons can close near their start, with right-click, or with Enter.
 4. Use E to edit. Drag a node, or click an edge to add and drag a node. Double-click an existing polygon node/edge to start redrawing.
-5. **Click another point on the original boundary to confirm the redraw.** Hovering or dragging near it does not confirm. Select the retained region from the blue/orange preview.
+5. **Click another point on the original boundary to confirm the redraw.** Hovering or dragging near it does not confirm. The larger region is retained immediately; double-click the gray alternative to retain the smaller region.
 6. A notice can be dismissed without discarding the draft. Esc cancels; Ctrl+Z undoes. Tab toggles Edit/Polygon while the canvas has focus.
 
 The old add/merge/subtract controls and cut-mode checkbox were removed in 0.5.0. The record page and generated judgment, confidence, review, quality, and note fields were removed in 0.5.2.
@@ -105,7 +105,7 @@ python -m venv .venv
 .venv\Scripts\python.exe run.py
 ```
 
-The local v0.5.2 record is 75 passing tests plus a native frozen Mac startup/save/export/render check. Windows validation is static. An optional upstream Labelme reference test is skipped when that external checkout is absent. These checks do not establish clinical accuracy or quantified annotation efficiency.
+The local v0.6.0 record is 86 passing tests plus a native frozen Mac startup/save/export/render check. Windows validation is static. An optional upstream Labelme reference test is skipped when that external checkout is absent. These checks do not establish clinical accuracy or quantified annotation efficiency.
 
 For manual GitHub publication, see the [upload guide (Chinese)](docs/GITHUB-MANUAL-UPLOAD.zh-CN.md). Original source is MIT-licensed; dependencies retain their own licenses. Labelme is an external interaction/format reference; see [NOTICE](NOTICE.md).
 
@@ -115,8 +115,9 @@ For manual GitHub publication, see the [upload guide (Chinese)](docs/GITHUB-MANU
 
 | Version | Main changes | Local date |
 |---|---|---|
+| [0.6.0](docs/releases/v0.6.0.md) | Fewer dialogs, direct region selection, visible copy/slideshow controls | 2026-11-06 |
 | [0.5.2-licensefix1](docs/releases/v0.5.2-licensefix1.md) | Licenses and corresponding source; two-workflow guide and complete history links | 2026-11-05 |
-| [0.5.2](docs/releases/v0.5.2-licensefix1.md) | Click-confirmed redraw and removable notices; record UI removed | 2026-11-05 |
+| [0.5.2](docs/releases/v0.5.2.md) | Click-confirmed redraw and removable notices; record UI removed | 2026-11-05 |
 | [0.5.1](docs/releases/v0.5.1.md) | Out-of-view projection and redraw closure fixes | 2026-11-05 |
 | [0.5.0](docs/releases/v0.5.0.md) | Gradient-aware view and unified boundary editing | 2026-11-05 |
 | [0.4.1](docs/releases/v0.4.1.md) | Region-operation workflow fixes | 2026-11-03 |
@@ -130,3 +131,11 @@ For manual GitHub publication, see the [upload guide (Chinese)](docs/GITHUB-MANU
 ## Third-party licensing
 
 See [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md) and the [replacement/rebuild guide](licenses/REPLACING-LIBRARIES.md). The licensefix1 revision includes license texts, a visible in-app license viewer and a separate free Qt/PySide6/GEOS corresponding-source download.
+
+## 0.6.0: fewer dialogs
+
+Frame copy reports completion or failure in the canvas footer. Set X (default 1) to copy to the next X frames. Copied JSON retains a source-image marker and shows a persistent inspection reminder on load. Existing destination JSON has a previous-version backup.
+
+Boundary redraw immediately retains the larger region; the gray smaller alternative can be chosen with a double-click. Autosave writes accepted edits when enabled. Click elsewhere, switch tools/images or undo to dismiss the alternative. Slideshow controls are always visible. Mac supports both Command and physical Control for C/V/S; Windows uses Ctrl+C/V/S. Text fields retain text clipboard behavior.
+
+[Mac 快捷键 / Mac shortcuts](docs/MAC-SHORTCUTS.zh-CN.md)

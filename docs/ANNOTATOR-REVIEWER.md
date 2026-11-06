@@ -14,10 +14,10 @@
 2. 按 E 进入“选择编辑”，选中需要修正的已有多边形。
 3. 小范围修正：拖动节点；需要增加控制点时单击边线。
 4. 更换一段边界：双击原节点或边线开始，逐点或 Shift＋左键画新边界。
-5. **单击原轮廓另一处边线确认终点**，按蓝/橙预览选择需要保留的区域。
+5. **单击原轮廓另一处边线确认终点**，默认保留大块并提交；若要保留小块，双击灰色小块。
 6. 检查保存状态及文件修改时间，再交接或导出。
 
-这里的“保留”指选择重画后的候选区域，不是自动为初标和复核保存两个历史版本。
+这里的“保留”指默认保留大块或双击选择小块，不是自动为初标和复核保存两个历史版本。
 自动保存默认写入当前 JSON，`.json.bak` 只保留上一版；如需同时保留初标与复核成果，
 请在交接前复制完整项目到独立工作目录，并保持图像与 JSON 的相对位置。
 
@@ -33,8 +33,7 @@ not accounts or permission levels.
 The annotator creates polygons or weak box/point/line/scribble cues. The reviewer
 opens the existing JSON and presses **E** to adjust nodes or redraw part of an
 existing boundary. Double-click a node/edge to start, draw the replacement path,
-then **click another point on the original boundary** and choose the retained
-region from the two previews. Other annotations remain available for editing.
+then **click another point on the original boundary** and keep the larger region by default. Double-click the gray smaller alternative to switch. Other annotations remain available for editing.
 
 Autosave updates the current JSON; one `.json.bak` is a previous-file backup,
 not a review history. Duplicate the complete project into a separate working

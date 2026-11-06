@@ -60,6 +60,7 @@ class Canvas(QWidget):
         self.close_distance = 12
         self.wait_for_shift_release = False
         self.reshape_preview = []
+        self.reshape_alternative = None
         self.reshape_allow_both = True
         self.auto_closed = None
         self.view_boundary = None
@@ -71,6 +72,7 @@ class Canvas(QWidget):
         image = QImage(str(doc.image))
         if image.isNull():
             raise ValueError(f"无法显示图片：{doc.image}")
+        self.clear_reshape_alternative()
         self.doc = doc
         self.auto_closed = None
         from .view_boundary import detect_view_boundary
@@ -221,6 +223,7 @@ class Canvas(QWidget):
                 painter.drawEllipse(QPointF(*self.draft[0]), self.close_distance/self.scale, self.close_distance/self.scale)
 
     def change_tool(self, tool):
+        self.clear_reshape_alternative()
         self.cancel_draft()
         self.tool = tool
         self.setCursor(Qt.CursorShape.OpenHandCursor if tool == "pan" else
@@ -352,18 +355,23 @@ class Canvas(QWidget):
         self.draft_changed.emit()
         self.message.emit("局部重画：沿新边界点选或 Shift＋左键拖动采点，最后点击同一轮廓的任意边界位置。")
 
+    def clear_reshape_alternative(self):
+        self.reshape_alternative = None
+        self.reshape_preview = []
+        self.update()
+
     def choose_reshape_parts(self):
-        dialog = QMessageBox(self)
-        dialog.setWindowTitle("局部边界重画")
-        dialog.setText("新边界已接回原轮廓。请根据蓝色、橙色预览选择保留区域。")
-        large = dialog.addButton("保留较大块（蓝色）", QMessageBox.ButtonRole.AcceptRole)
-        small = dialog.addButton("保留较小块（橙色）", QMessageBox.ButtonRole.AcceptRole)
-        both = dialog.addButton("保留两块", QMessageBox.ButtonRole.AcceptRole)
-        both.setEnabled(self.reshape_allow_both)
-        dialog.addButton("取消", QMessageBox.ButtonRole.RejectRole)
-        dialog.exec()
-        choice = "large" if dialog.clickedButton() == large else "small" if dialog.clickedButton() == small else "both" if dialog.clickedButton() == both else "cancel"
-        return choice
+        # Default is committed immediately; the canvas offers a non-modal alternative.
+        return "large"
+
+    def alternative_hit(self, point):
+        if not self.reshape_alternative:
+            return False
+        i, expected, smaller = self.reshape_alternative
+        if not self.doc or i >= len(self.doc.shapes) or self.doc.shapes[i] != expected:
+            self.clear_reshape_alternative()
+            return False
+        return self.path_for(smaller).contains(point)
 
     def reshape_boundary_hit(self, point, notify=False):
         if self.reshape is None:
@@ -385,8 +393,7 @@ class Canvas(QWidget):
         _, j, q = best
         self._reshape_error = None
         self.finish_reshape(j, q)
-        if notify and self._reshape_error:
-            QMessageBox.warning(self, "新边界暂时无法闭合", self._reshape_error + "\n路径已保留，可 Ctrl+Z 撤回后调整，或 Esc 取消。")
+
         return True
 
     def finish_reshape(self, end_index, end_point=None):
@@ -426,7 +433,10 @@ class Canvas(QWidget):
                     break
                 current = (current+step) % n
             return points
-        paths = [walk(step)+self.draft[1:] for step in [1, -1]]
+        tail = copy.deepcopy(self.draft[1:])
+        if tail and math.dist(tail[-1], end_xy)*self.scale <= 12:
+            tail[-1] = end_xy
+        paths = [walk(step)+tail for step in [1, -1]]
         if any(len(path)<3 for path in paths):
             self._reshape_error = "新路径沿原边线重合，没有围出区域；请先画入区域内部或外侧，再接回另一处边界。"
             self.message.emit(self._reshape_error)
@@ -441,8 +451,7 @@ class Canvas(QWidget):
         larger, smaller = sorted(candidates, key=lambda g: g.area, reverse=True)
         base = Polygon(source.points)
         self.reshape_allow_both = larger.intersection(smaller).area < .001
-        self.reshape_preview = [(list(larger.exterior.coords), "#55aaff"),
-                                (list(smaller.exterior.coords), "#ffae55")]
+        self.reshape_preview = [(list(smaller.exterior.coords), "#92979f")]
         self.update()
         try:
             choice = self.choose_reshape_parts()
@@ -465,6 +474,13 @@ class Canvas(QWidget):
         self.cancel_draft()
         self.changed.emit()
         self.selection_changed.emit()
+        if choice == "large" and len(replacements) == 1:
+            alternate = copy.deepcopy(replacements[0])
+            alternate.points = [list(p) for p in list(smaller.exterior.coords)[:-1]]
+            self.reshape_alternative = (i, copy.deepcopy(replacements[0]), alternate)
+            self.reshape_preview = [(alternate.points, "#92979f")]
+            self.message.emit("已默认保留大块；如需小块，请双击灰色区域。")
+            self.update()
 
     @staticmethod
     def edge_projection(p, a, b):
@@ -509,6 +525,10 @@ class Canvas(QWidget):
         if not self.doc:
             return
         p = self.to_image(event.position())
+        if self.reshape_alternative and event.button() == Qt.MouseButton.LeftButton:
+            if self.alternative_hit(p):
+                return
+            self.clear_reshape_alternative()
         if event.button() == Qt.MouseButton.MiddleButton or (event.button() == Qt.MouseButton.LeftButton and (
                 self.space or self.tool == "pan" or event.modifiers() & Qt.KeyboardModifier.AltModifier)):
             self.pan_anchor = event.position()
@@ -653,6 +673,15 @@ class Canvas(QWidget):
         self.update()
 
     def mouseDoubleClickEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton and self.alternative_hit(self.to_image(event.position())):
+            i, expected, smaller = self.reshape_alternative
+            self.doc.shapes[i] = copy.deepcopy(smaller)
+            self.clear_reshape_alternative()
+            self.changed.emit()
+            self.selection_changed.emit()
+            self.message.emit("已切换为保留小块。")
+            event.accept()
+            return
         if self.tool == "edit" and self.doc and event.button()==Qt.MouseButton.LeftButton:
             self.drag_start=self.drag_original=self.vertex=None
             if self.reshape is None:
@@ -713,6 +742,7 @@ class Canvas(QWidget):
             self.setCursor(Qt.CursorShape.OpenHandCursor)
             event.accept()
         elif event.key() == Qt.Key.Key_Escape:
+            self.clear_reshape_alternative()
             if self.drag_original is not None:
                 self.doc.shapes = self.drag_original
                 self.drag_start = self.drag_original = self.vertex = None

@@ -113,10 +113,10 @@ class Document:
                 **({"clinical": copy.deepcopy(self.clinical)} if self.clinical else {})}
 
     def snapshot(self):
-        return copy.deepcopy((self.shapes, self.clinical, self.flags))
+        return copy.deepcopy((self.shapes, self.clinical, self.flags, self.extra))
 
     def restore(self, value):
-        self.shapes, self.clinical, self.flags = copy.deepcopy(value)
+        self.shapes, self.clinical, self.flags, self.extra = copy.deepcopy(value)
 
 
 def load_document(image: Path, label: Path | None = None):

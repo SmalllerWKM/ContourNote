@@ -1,5 +1,11 @@
 [
   {
+    "version": "0.6.0",
+    "local_date": "2026-11-06",
+    "title": "减少弹窗与直接编辑",
+    "notes": "v0.6.0.md"
+  },
+  {
     "version": "0.5.2-licensefix1",
     "local_date": "2026-11-05",
     "title": "许可证与对应源码补齐、双角色流程和完整历史入口",
